@@ -1,0 +1,9 @@
+version: '3'
+services:
+  custom_wire_mock:
+    build: .
+    #ports:
+     # - "8089:8080"
+    network_mode: host
+    volumes:
+      - ./src/test/resources:/data
