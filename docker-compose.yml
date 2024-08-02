@@ -3,4 +3,6 @@ services:
   customwiremock:
     build: .
     image:  192.168.178.73:6088/custom-wire-mock:latest
+    volumes:
+      - /home/gabriela/Documents/mappings:/data:ro
     network_mode: host

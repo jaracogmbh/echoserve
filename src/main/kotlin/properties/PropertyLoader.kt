@@ -3,6 +3,7 @@ package de.jaraco.properties
 import de.jaraco.exception.NoPropertiesInPropertyFileException
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.io.InputStream
 import java.util.*
 import java.util.logging.Logger
 
@@ -25,9 +26,16 @@ class PropertyLoader private constructor() {
 
 
   @Throws(FileNotFoundException::class, NoPropertiesInPropertyFileException::class)
-  fun loadPropertyFile(filename: String): Properties {
-    logger.info("filename: $filename")
-    val inputStream = javaClass.classLoader.getResourceAsStream(filename)
+  fun loadPropertyFile(filename: String?, modus: String): Properties {
+    val inputStream: InputStream
+    if(modus == "local") {
+      logger.info("filename: $filename")
+      inputStream = javaClass.classLoader.getResourceAsStream("config.properties")!!
+    }else if(modus == "docker") {
+      inputStream = java.io.FileInputStream("/data/$filename")
+    }else{
+      throw IllegalArgumentException("Modus $modus not supported")
+    }
     val properties1 = Properties()
     try {
       properties1.load(inputStream)
