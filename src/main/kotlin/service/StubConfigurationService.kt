@@ -2,7 +2,6 @@ package de.jaraco.service
 
 
 
-import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import java.util.logging.Logger
 

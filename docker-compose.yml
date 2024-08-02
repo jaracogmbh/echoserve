@@ -1,9 +1,6 @@
-version: '3'
+
 services:
-  custom_wire_mock:
+  customwiremock:
     build: .
-    #ports:
-     # - "8089:8080"
+    image:  192.168.178.73:6088/custom-wire-mock:latest
     network_mode: host
-    volumes:
-      - ./src/test/resources:/data

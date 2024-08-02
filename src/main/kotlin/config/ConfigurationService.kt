@@ -25,15 +25,10 @@ class ConfigurationService private constructor(
     val port = propertyLoader.extractPort(properties)
     logger.info("Configuring CustomWireMock with port: $port")
     val mode = propertyLoader.extractMode(properties)
-    if(mode == "docker"){
-        val fileLocation = propertyLoader.extractFileLocation(properties)
-      logger.info("Configuring CustomWireMock with fileLocation: $fileLocation")
-        val customWireMock = CustomWireMock(port.toInt(), fileLocation)
-        return customWireMock
-    }else{
-        val customWireMock = CustomWireMock(port.toInt())
-        return customWireMock
-    }
+    val fileLoc = propertyLoader.extractFileLocation(properties)
+    val customWireMock = CustomWireMock(port.toInt(), fileLoc, mode)
+    customWireMock.createWireMockServer()
+    return customWireMock
   }
 
   fun configureStubs() {
