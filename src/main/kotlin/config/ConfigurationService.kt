@@ -39,18 +39,15 @@ class ConfigurationService private constructor(
       val response = propertyLoader.extractResponse(value)
       val contentType = propertyLoader.extractContentType(value)
       val statusCode = propertyLoader.extractStatusCode(value)
-      val parameter: Boolean = propertyLoader.extractWithParameter(value).toBoolean()
       when (val requestType = propertyLoader.extractRequestType(value)) {
         "GET" -> {
-          if(parameter){
-            val paramName = propertyLoader.extractParamName(value)
-            val param = propertyLoader.extractParam(value)
-            stubConfigurationService.configureGetParameterStub(url, response, contentType, hostname, port.toInt(), statusCode.toInt(), paramName, param)
-          } else {
-            stubConfigurationService.configureGetStub(url, response, contentType, hostname, port.toInt(), statusCode.toInt())
-          }
           stubConfigurationService.configureGetStub(url, response, contentType, hostname, port.toInt(), statusCode.toInt())}
-        "POST" -> stubConfigurationService.configurePostStub(url, response, contentType, hostname, port.toInt())
+        "POST" -> {
+          val requestBody = propertyLoader.extractRequestBody(value)
+          stubConfigurationService.configurePostStub(url, response, contentType, hostname, port.toInt(), requestBody, statusCode.toInt())
+        }
+        "PUT" -> stubConfigurationService.configurePutStub(url, response, contentType, hostname, port.toInt(), statusCode.toInt())
+        "DELETE" -> stubConfigurationService.configureDeleteStub(url, response, contentType, hostname, port.toInt(), statusCode.toInt())
         else -> logger.warning("Request type $requestType not supported")
       }
     }
@@ -59,7 +56,6 @@ class ConfigurationService private constructor(
   fun configureCustomWireMock(modus: String, filename: String?) {
     val properties = propertyLoader.loadPropertyFile(filename, modus)
     val customWireMock = configureCustomWireMockBasic(properties, modus)
-    //configureStubs(customWireMock)
     customWireMock.startWireMockServer()
     configureStubs(properties)
     logger.info("WireMock server started")

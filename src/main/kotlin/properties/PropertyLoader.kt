@@ -84,18 +84,8 @@ class PropertyLoader private constructor() {
     return properties.getProperty("statusCode")
   }
 
-  fun extractParamName(properties: Properties): String {
-    return properties.getProperty("paramName")
-  }
-
-  fun extractParam(properties: Properties): String {
-    return properties.getProperty("param")
-  }
-  fun extractWithParameter(properties: Properties): String {
-    return properties.getProperty("withParameter")
-  }
-  fun extractMode(properties: Properties): String {
-    return properties.getProperty("mode")
+  fun extractRequestBody(properties: Properties): String {
+    return properties.getProperty("requestBody")
   }
 
   fun extractFileLocation(properties: Properties): String {

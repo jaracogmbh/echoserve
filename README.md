@@ -22,7 +22,7 @@ request1.withParameter=false
 ``` 
 - every request need to start with the word "request" followed by a unique identifier and a period. In this example we used a number. 
 - every request needs to have the following properties:
-  - requestType: the type of the request ( currently just GET or POST)
+  - requestType: the type of the request (currently just GET or POST)
   - statusCode: the status code that should be returned
   - url: the url that should be mapped
   - contentType: the content type of the response
