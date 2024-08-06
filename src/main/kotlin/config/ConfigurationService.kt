@@ -46,7 +46,10 @@ class ConfigurationService private constructor(
           val requestBody = propertyLoader.extractRequestBody(value)
           stubConfigurationService.configurePostStub(url, response, contentType, hostname, port.toInt(), requestBody, statusCode.toInt())
         }
-        "PUT" -> stubConfigurationService.configurePutStub(url, response, contentType, hostname, port.toInt(), statusCode.toInt())
+        "PUT" -> {
+          val requestBody = propertyLoader.extractRequestBody(value)
+          stubConfigurationService.configurePutStub(url, response, contentType, hostname, port.toInt(), statusCode.toInt(), requestBody)
+        }
         "DELETE" -> stubConfigurationService.configureDeleteStub(url, response, contentType, hostname, port.toInt(), statusCode.toInt())
         else -> logger.warning("Request type $requestType not supported")
       }

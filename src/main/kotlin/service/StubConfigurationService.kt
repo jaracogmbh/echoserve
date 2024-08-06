@@ -67,11 +67,13 @@ class StubConfigurationService private constructor() {
         hostname: String,
         port: Int,
         status: Int,
+        regex: String,
     ){
         logger.info("Configuring PUT stub for url: $url")
         configureFor(hostname, port)
         stubFor(
         put(urlMatching(url))
+            .withRequestBody(matching(regex))
             .willReturn(
                 aResponse()
                     .withStatus(status)
