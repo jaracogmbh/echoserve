@@ -10,7 +10,6 @@ jobs:
     steps:
       - name: Checkout project sources
         uses: actions/checkout@v4
-
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
