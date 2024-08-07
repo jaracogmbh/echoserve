@@ -4,6 +4,6 @@ services:
     build: .
     image:  192.168.178.73:6088/custom-wire-mock:latest
     volumes:
-      - /home/gabriela/Documents/mappings:/data:ro
+      - /path/to/your/mappings:/data:ro
     ports:
       - "8089:8089"
