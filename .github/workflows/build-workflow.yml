@@ -38,6 +38,13 @@ jobs:
         - name: Run tests
           run: ./gradlew test
 
+        - name: Upload JAR file
+          uses: actions/upload-artifact@v3
+          with:
+            name: application-jar
+            path: build/libs/application.jar
+
+
   docker:
     runs-on: ubuntu-latest
     needs: test
