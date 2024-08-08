@@ -67,6 +67,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: application-jar
+          path: build/libs
+
       - name: build and Push
         uses: docker/build-push-action@v6
         with:
