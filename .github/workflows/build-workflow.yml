@@ -70,7 +70,7 @@ jobs:
       - name: Download JAR artifact
         uses: actions/download-artifact@v3
         with:
-          name: application-jar
+          name: application.jar
           path: build/libs
 
       - name: build and Push
