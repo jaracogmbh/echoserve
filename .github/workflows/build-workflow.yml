@@ -79,5 +79,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: jaracogmbh/echoserve:snapshot${{GITHUB_SHA}}
+          tags: jaracogmbh/echoserve:github.sha
           # dockerhub url
