@@ -55,8 +55,8 @@ jobs:
           username: ${{ vars.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PWD }}
 
-#      - name: Checkout project sources
-#        uses: actions/checkout@v4
+      - name: Checkout project sources
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
