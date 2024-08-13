@@ -16,9 +16,19 @@ jobs:
 
       - name: Describe Tags
         run: |
-            tags=$(git describe --tags --all)
-            echo "$tags"
-      
+            tag=$(git describe --tags)
+            echo "$tag"
+
+      - name: Upload Tag
+        uses: actions/upload-artifact@v3
+        with:
+          name: tag
+
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: tag
+        run: echo "Downloaded tag $tag"
 
 #  build:
 #    runs-on: ubuntu-latest
