@@ -11,12 +11,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-        - name: Get current Git tag
-          run: echo "The current Git tag is ${GITHUB_REF#refs/tags/}"
+      - name: Get current Git tag
+        run: echo "The current Git tag is ${GITHUB_REF#refs/tags/}"
 
 #  build:
 #    runs-on: ubuntu-latest
