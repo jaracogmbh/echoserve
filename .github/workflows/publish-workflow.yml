@@ -77,7 +77,10 @@ jobs:
 
       - name: Get tag from file
         id: get-tag
-        run: tag=$(cat /tmp/tag) && echo "The current Git tag is $tag"
+        run: |
+          tag=$(cat /tmp/tag)
+          echo "The current Git tag is $tag"
+          echo "::set-output name=tag::$tag"
 
       - name: Download JAR artifact
         uses: actions/download-artifact@v3
