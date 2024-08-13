@@ -92,4 +92,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: jaracogmbh/echoserve:$tag
+          tags: jaracogmbh/echoserve:{$tag}
