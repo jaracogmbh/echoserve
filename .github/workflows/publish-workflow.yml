@@ -6,92 +6,90 @@ on:
       - '*'
 
 jobs:
-  test:
+#  test:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#
+#      - name: Print GITHUB_REF
+#        run: echo "GITHUB_REF is $GITHUB_REF"
+#
+#      - name: Get current Git tag
+#        run: echo "The current Git tag is ${GITHUB_REF#refs/tags/}"
+#
+#      - name: Get git tag
+#        run: |
+#          tag=$(git describe --tags --abbrev=0)
+#          echo "The current Git tag is $tag"
+#      - name: Upload tag
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: tag
+#          path: /tmp/tag
+#
+#      - name: Download tag
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: tag
+#          path: /tmp/tag
+#
+#      - name: Print tag
+#        run: echo "The current Git tag is $tag"
+          
+
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout project sources
+        uses: actions/checkout@v4
 
-      - name: Print GITHUB_REF
-        run: echo "GITHUB_REF is $GITHUB_REF"
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          build-scan-publish: true
+          build-scan-term-of-use-url: 'https://gradle.com/terms-of-service'
+          build-scan-terms-of-use-agree: 'yes'
 
-      - name: Get current Git tag
-        run: echo "The current Git tag is ${GITHUB_REF#refs/tags/}"
+      - name: Run build
+        run: ./gradlew build
+
+      - name: Upload JAR file
+        uses: actions/upload-artifact@v3
+        with:
+          name: application-jar
+          path: build/libs/application.jar
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ vars.DOCKER_HUB_USER }}
+          password: ${{ secrets.DOCKER_HUB_PWD }}
+
+      - name: Checkout project sources
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Get git tag
         run: |
           tag=$(git describe --tags --abbrev=0)
           echo "The current Git tag is $tag"
-      - name: Upload tag
-        uses: actions/upload-artifact@v3
-        with:
-          name: tag
-          path: /tmp/tag
 
-      - name: Download tag
+      - name: Download JAR artifact
         uses: actions/download-artifact@v3
         with:
-          name: tag
-          path: /tmp/tag
+          name: application-jar
+          path: build/libs
 
-      - name: Print tag
-        run: echo "The current Git tag is $tag"
-          
-
-#  build:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout project sources
-#        uses: actions/checkout@v4
-#
-#      - name: Set up Gradle
-#        uses: gradle/actions/setup-gradle@v3
-#        with:
-#          build-scan-publish: true
-#          build-scan-term-of-use-url: 'https://gradle.com/terms-of-service'
-#          build-scan-terms-of-use-agree: 'yes'
-#
-#      - name: Run build
-#        run: ./gradlew build
-#
-#      - name: Upload JAR file
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: application-jar
-#          path: build/libs/application.jar
-#
-#  docker:
-#    runs-on: ubuntu-latest
-#    needs: build
-#    steps:
-#      - name: Login to Docker Hub
-#        uses: docker/login-action@v2
-#        with:
-#          username: ${{ vars.DOCKER_HUB_USER }}
-#          password: ${{ secrets.DOCKER_HUB_PWD }}
-#
-#      - name: Checkout project sources
-#        uses: actions/checkout@v4
-#
-#      - name: Set up Docker Buildx
-#        uses: docker/setup-buildx-action@v3
-
-      #      - name: Login to GitHub Container Registry
-      #        uses: docker/login-action@v2
-      #        with:
-      #          registry: ghcr.io
-      #          username: ${{ github.actor }}
-      #          password: ${{ secrets.GITHUB_TOKEN }}
-
-#      - name: Download JAR artifact
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: application-jar
-#          path: build/libs
-#
-#      - name: build and Push
-#        uses: docker/build-push-action@v6
-#        with:
-#          context: .
-#          push: true
-#          tags: jaracogmbh/echoserve:test
+      - name: build and Push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: jaracogmbh/echoserve:$tag
