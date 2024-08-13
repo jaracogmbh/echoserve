@@ -28,7 +28,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: tag
-        run: echo "Downloaded tag $tag"
 
 #  build:
 #    runs-on: ubuntu-latest
