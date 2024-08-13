@@ -22,7 +22,7 @@ jobs:
 
       - name: Get git tag
         run: |
-          tag=$(git describe)
+          tag=$(git describe --tags --abbrev=0)
           echo "The current Git tag is $tag"
           
 
