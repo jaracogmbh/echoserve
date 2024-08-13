@@ -24,6 +24,18 @@ jobs:
         run: |
           tag=$(git describe --tags --abbrev=0)
           echo "The current Git tag is $tag"
+      - name: Upload tag
+        uses: actions/upload-artifact@v3
+        with:
+          name: tag
+
+      - name: Download tag
+        uses: actions/download-artifact@v3
+        with:
+          name: tag
+
+      - name: Print tag
+        run: echo "The current Git tag is $tag"
           
 
 #  build:
