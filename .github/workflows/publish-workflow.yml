@@ -4,8 +4,6 @@ on:
   push:
     tags:
       - '*'
-    branches:
-      - feature/github-workflow
 
 jobs:
   test:
@@ -28,11 +26,13 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: tag
+          path: tags
 
       - name: Download tag
         uses: actions/download-artifact@v3
         with:
           name: tag
+          path: tags
 
       - name: Print tag
         run: echo "The current Git tag is $tag"
