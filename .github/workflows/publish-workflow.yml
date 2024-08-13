@@ -76,6 +76,7 @@ jobs:
           path: /tmp
 
       - name: Get tag from file
+        id: get-tag
         run: tag=$(cat /tmp/tag) && echo "The current Git tag is $tag"
 
       - name: Download JAR artifact
