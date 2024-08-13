@@ -26,13 +26,13 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: tag
-          path: tags
+          path: /tmp/tag
 
       - name: Download tag
         uses: actions/download-artifact@v3
         with:
           name: tag
-          path: tags
+          path: /tmp/tag
 
       - name: Print tag
         run: echo "The current Git tag is $tag"
