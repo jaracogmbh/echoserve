@@ -32,6 +32,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    needs: test
     steps:
       - name: Checkout project sources
         uses: actions/checkout@v4
@@ -83,9 +84,11 @@ jobs:
           name: application-jar
           path: build/libs
 
-      - name: build and Push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: jaracogmbh/echoserve:${{ steps.get-tag.outputs.tag }}
+      - name: test tag
+        run: echo "The current Git tag is ${{ steps.get-tag.outputs.tag }}"
+#      - name: build and Push
+#        uses: docker/build-push-action@v6
+#        with:
+#          context: .
+#          push: true
+#          tags: jaracogmbh/echoserve:${{ steps.get-tag.outputs.tag }}
