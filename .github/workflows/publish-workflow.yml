@@ -6,37 +6,29 @@ on:
       - '*'
 
 jobs:
-#  test:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#
-#      - name: Print GITHUB_REF
-#        run: echo "GITHUB_REF is $GITHUB_REF"
-#
-#      - name: Get current Git tag
-#        run: echo "The current Git tag is ${GITHUB_REF#refs/tags/}"
-#
-#      - name: Get git tag
-#        run: |
-#          tag=$(git describe --tags --abbrev=0)
-#          echo "The current Git tag is $tag"
-#      - name: Upload tag
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: tag
-#          path: /tmp/tag
-#
-#      - name: Download tag
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: tag
-#          path: /tmp/tag
-#
-#      - name: Print tag
-#        run: echo "The current Git tag is $tag"
-          
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Print GITHUB_REF
+        run: echo "GITHUB_REF is $GITHUB_REF"
+
+      - name: Get current Git tag
+        run: echo "The current Git tag is ${GITHUB_REF#refs/tags/}"
+
+      - name: Get git tag
+        run: |
+          tag=$(git describe --tags --abbrev=0)
+          echo "The current Git tag is $tag"
+          echo $tag > /tmp/tag
+      - name: Upload tag
+        uses: actions/upload-artifact@v3
+        with:
+          name: tag
+          path: /tmp/tag
+
 
   build:
     runs-on: ubuntu-latest
@@ -76,10 +68,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Get git tag
-        run: |
-          tag=$(git describe --tags --abbrev=0)
-          echo "The current Git tag is $tag"
+      - name: Download tag
+        uses: actions/download-artifact@v3
+        with:
+          name: tag
+          path: /tmp
+
+      - name: Get tag from file
+        run: tag=$(cat /tmp/tag) && echo "The current Git tag is $tag"
 
       - name: Download JAR artifact
         uses: actions/download-artifact@v3
