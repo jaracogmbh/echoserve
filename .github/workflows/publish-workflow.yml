@@ -24,6 +24,7 @@ jobs:
         run: |
           tag = $(git describe --tags)
           echo "The current Git tag is $tag"
+          
 
 #  build:
 #    runs-on: ubuntu-latest
