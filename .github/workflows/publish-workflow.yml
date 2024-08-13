@@ -11,23 +11,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
 
-      - name: Describe Tags
-        run: |
-            tag=$(git describe --tags)
-            echo "$tag"
-
-      - name: Upload Tag
-        uses: actions/upload-artifact@v3
-        with:
-          name: tag
-
-      - name: Download JAR artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: tag
+        - name: Get current Git tag
+          run: echo "The current Git tag is ${GITHUB_REF#refs/tags/}"
 
 #  build:
 #    runs-on: ubuntu-latest
