@@ -20,6 +20,11 @@ jobs:
       - name: Get current Git tag
         run: echo "The current Git tag is ${GITHUB_REF#refs/tags/}"
 
+      - name: Get git tag
+        run: |
+          tag = $(git describe --tags)
+          echo "The current Git tag is $tag"
+
 #  build:
 #    runs-on: ubuntu-latest
 #    steps:
