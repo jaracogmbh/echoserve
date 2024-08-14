@@ -1,7 +1,5 @@
 package de.jaraco.config
 
-import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import de.jaraco.model.CustomWireMock
 import de.jaraco.properties.PropertyLoader
 import de.jaraco.service.StubConfigurationService
@@ -19,19 +17,18 @@ class ConfigurationService private constructor(
         }
     }
   private var logger: Logger = Logger.getLogger(this.javaClass.name)
-  private val properties = propertyLoader.loadPropertyFile("config.properties")
 
-  fun configureCustomWireMockBasic(): CustomWireMock {
+
+  fun configureCustomWireMockBasic(properties: Properties, modus: String): CustomWireMock {
     val port = propertyLoader.extractPort(properties)
     logger.info("Configuring CustomWireMock with port: $port")
-    val mode = propertyLoader.extractMode(properties)
     val fileLoc = propertyLoader.extractFileLocation(properties)
-    val customWireMock = CustomWireMock(port.toInt(), fileLoc, mode)
+    val customWireMock = CustomWireMock(port.toInt(), fileLoc, modus)
     customWireMock.createWireMockServer()
     return customWireMock
   }
 
-  fun configureStubs() {
+  fun configureStubs(properties: Properties) {
     logger.info("Configuring stubs")
     val hostname = propertyLoader.extractHostname(properties)
     val port = propertyLoader.extractPort(properties)
@@ -59,11 +56,12 @@ class ConfigurationService private constructor(
     }
   }
 
-  fun configureCustomWireMock(){
-    val customWireMock = configureCustomWireMockBasic()
+  fun configureCustomWireMock(modus: String, filename: String?) {
+    val properties = propertyLoader.loadPropertyFile(filename, modus)
+    val customWireMock = configureCustomWireMockBasic(properties, modus)
     //configureStubs(customWireMock)
     customWireMock.startWireMockServer()
-    configureStubs()
+    configureStubs(properties)
     logger.info("WireMock server started")
     val isRunning = customWireMock.isWireMockServerRunning()
     if (isRunning) {
