@@ -7,7 +7,7 @@ import java.util.logging.Logger
 
 class CustomWireMock(
   val port: Int,
-  val fileLocation: String,
+  var fileLocation: String,
   val mode: String
 ) {
 
@@ -35,7 +35,8 @@ class CustomWireMock(
       wireMockServer = WireMockServer(options().port(port).usingFilesUnderDirectory(fileLocation))
     }
     else {
-      wireMockServer = WireMockServer(options().usingFilesUnderClasspath("src/main/resources").port(port))
+      fileLocation = "src/main/resources"
+      wireMockServer = WireMockServer(options().usingFilesUnderClasspath(fileLocation).port(port))
     }
   }
 

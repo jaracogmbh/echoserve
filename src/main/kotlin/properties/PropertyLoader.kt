@@ -1,6 +1,7 @@
 package de.jaraco.properties
 
 import de.jaraco.exception.NoPropertiesInPropertyFileException
+import de.jaraco.exception.UnknownModusException
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
@@ -32,9 +33,9 @@ class PropertyLoader private constructor() {
       logger.info("filename: $filename")
       inputStream = javaClass.classLoader.getResourceAsStream("config.properties")!!
     }else if(modus == "docker") {
-      inputStream = java.io.FileInputStream("/data/$filename")
+      inputStream = java.io.FileInputStream("data/$filename")
     }else{
-      throw IllegalArgumentException("Modus $modus not supported")
+      throw UnknownModusException("Modus $modus not supported")
     }
     val properties1 = Properties()
     try {
@@ -84,18 +85,8 @@ class PropertyLoader private constructor() {
     return properties.getProperty("statusCode")
   }
 
-  fun extractParamName(properties: Properties): String {
-    return properties.getProperty("paramName")
-  }
-
-  fun extractParam(properties: Properties): String {
-    return properties.getProperty("param")
-  }
-  fun extractWithParameter(properties: Properties): String {
-    return properties.getProperty("withParameter")
-  }
-  fun extractMode(properties: Properties): String {
-    return properties.getProperty("mode")
+  fun extractRequestBody(properties: Properties): String {
+    return properties.getProperty("requestBody")
   }
 
   fun extractFileLocation(properties: Properties): String {
