@@ -1,6 +1,9 @@
+---
+title: 'Custom WireMock Project'
+---
 <div><img src="/images/jaraco_logo_software_engineer.png" width="200px" align="right"></div>
 
-# Custom WireMock Project: ReadMe
+# ReadMe
 This project aims to create a custom WireMock server that can be used to mock RESTful services. The project is based on the WireMock project and is intended to be used as a standalone server. The project is meant to be configurable via a properties file.
 ## Master Branch
 
