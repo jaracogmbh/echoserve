@@ -1,8 +1,7 @@
 
 services:
-  customwiremock:
-    build: .
-    image:  192.168.178.73:6088/custom-wire-mock:latest
+  customwiremocktest:
+    image:   jaracogmbh/echoserve:1.0.0
     volumes:
       - /path/to/your/mappings:/data:ro
     ports:

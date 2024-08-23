@@ -69,3 +69,22 @@ request2.response=addEmployee.json
     - also, we need to give a second parameter in the args array. This parameter is the name of the configuration file that we want to use. The configuration file should be located in the ``/data`` folder in the docker container.
 - run command for the command line for local configuration: ``java -jar application.jar local``
 - run command used in the dockerfile: ``java -jar application.jar docker config.properties``
+
+### Docker Compose Example
+
+In this section we will show an example of how to use Echoserve with docker compose.
+
+#### Example Docker Compose File
+
+```
+services:
+  customwiremocktest:
+    image:   jaracogmbh/echoserve:1.0.0
+    volumes:
+      - /path/to/your/mappings:/data:ro
+    ports:
+      - "8089:8089"
+```
+- It is required to use a volume mount to mount the mappings to the ``/data`` directory in the docker container. The mappings should contain the response files and the configuration file. 
+- The response files should be in a folder named ``__files`` in the mappings directory. This is required by WireMock.
+- The configuration file should be named ``config.properties``.
