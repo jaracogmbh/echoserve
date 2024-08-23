@@ -1,16 +1,4 @@
----
-header-includes:
-  \usepackage{graphicx}
-  \usepackage{fancyhdr}
-  \pagestyle{fancy}
-  \setlength\headheight{28pt}
-  \fancyhead[L]{\includegraphics[width=5cm]{GPIM_Logo_300x85.png}}
-  \fancyfoot[LE,RO]{GPIM}
-output: 
-  html_document:
-    includes:
-      in_header: /logo.html
----
+
 # Custom WireMock Project: ReadMe
 This project aims to create a custom WireMock server that can be used to mock RESTful services. The project is based on the WireMock project and is intended to be used as a standalone server. The project is meant to be configurable via a properties file.
 ## Master Branch
