@@ -1,3 +1,9 @@
+---
+output: 
+  html_document:
+    includes:
+      in_header: logo.html
+---
 # Custom WireMock Project: ReadMe
 This project aims to create a custom WireMock server that can be used to mock RESTful services. The project is based on the WireMock project and is intended to be used as a standalone server. The project is meant to be configurable via a properties file.
 ## Master Branch
@@ -88,3 +94,5 @@ services:
 - It is required to use a volume mount to mount the mappings to the ``/data`` directory in the docker container. The mappings should contain the response files and the configuration file. 
 - The response files should be in a folder named ``__files`` in the mappings directory. This is required by WireMock.
 - The configuration file should be named ``config.properties``.
+---
+<img alt="FirmenLogo" height="100" src="/images/jaraco_logo_software_engineer.png" width="300"/>
