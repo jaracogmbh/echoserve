@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           build-scan-publish: true
           build-scan-term-of-use-url: 'https://gradle.com/terms-of-service'
