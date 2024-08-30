@@ -188,16 +188,13 @@ Ensure the following file structure is in place:
 - `config.properties` should be located in the `/resources` directory.
 - `helloWorld.json` should be located in the `/resources/__files` directory.
 
-### Response File Example
+### Response 
 
 ```json
 {
   "message": "Hello World"
 }
 ```
-
-- **Location**: Place this file in the `/resources/__files` directory.
-
 ## Troubleshooting
 
 ### Common Issues
