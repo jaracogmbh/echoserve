@@ -1,37 +1,108 @@
-# Custom WireMock Project: ReadMe
-This project aims to create a custom WireMock server that can be used to mock RESTful services. The project is based on the WireMock project and is intended to be used as a standalone server. The project is meant to be configurable via a properties file.
-## Master Branch
+<img src="images/logo.png" alt="Custom WireMock Project Logo" width="128">
 
-Currently, the master branch contains a very simple version of the Custom WireMock. 
+# Custom WireMock Project
 
-### Features
-#### Request Mapping
-- GET, POST, PUT and DELETE mappings are supported.
-- POST and PUT mappings require a request body.
-- the mapping configuration is defined in the configuration file ```config.properties```
-- the mapping configuration is read at the start of the server and needs to be of a certain format:
-```
+## Overview
+
+This project creates a custom WireMock server for mocking RESTful services. It’s designed to run as a standalone service and can be configured via a simple properties file. Ideal for testing and developing against mock APIs.
+
+> **Note:** Currently, the master branch contains a very simple version of the Custom WireMock.
+
+## Features
+
+- **Request Mapping**: Supports GET, POST, PUT, DELETE requests with customizable response mappings.
+- **Configurable**: Define all behavior via the `config.properties` file.
+- **Flexible URL Matching**: Use regex to match URLs and request bodies.
+- **Docker Support**: Run seamlessly in Docker with minimal setup.
+
+## Prerequisites
+
+- **Docker**: Required for running the server in a containerized environment.
+- **Java**: Required if running locally from an IDE.
+- **Configuration Files**: Ensure the `config.properties` and response files are correctly placed.
+
+## Setup Instructions
+
+### Local Setup (IDE)
+
+1. Place `config.properties` and `__files` in `src/main/resources/`.
+2. Run the `main` function with the argument `local`:
+
+   ```bash
+   java -jar application.jar local
+   ```
+
+### Docker Setup
+
+1. **Directory Structure**: Organize your project as follows:
+
+   ```plaintext
+   ├── docker-compose.yml
+   └── resources
+       ├── __files
+       │   ├── addEmployee.json
+       │   ├── deleteEmployee.json
+       │   ├── helloWorld.json
+       │   └── updateEmployee.json
+       └── config.properties
+   ```
+
+2. **Docker Compose File**: Create a `docker-compose.yml` file:
+
+   ```yaml
+   version: "3.8"
+
+   services:
+     echoserve:
+       image: docker.io/jaracogmbh/echoserve:1.0.0
+       platform: linux/amd64
+       volumes:
+         - ./resources:/data:ro
+       ports:
+         - "8089:8089"
+   ```
+
+3. **Running the Server**: From the directory containing `docker-compose.yml`, run:
+
+   ```bash
+   docker-compose up
+   ```
+
+## Configuration
+
+### Request Mapping Configuration
+
+Each request configuration in `config.properties` must follow a specific format:
+
+```properties
 request1.requestType=GET
 request1.statusCode=200
 request1.url=/helloWorld
 request1.contentType=application/json
-request1.response= helloWorld.json
-``` 
-- every request need to start with the word "request" followed by a unique identifier and a period. In this example we used a number. 
-- every request needs to have the following properties:
-  - ``requestType``: the type of the request (GET, POST, PUT, DELETE)
-  - ``statusCode``: the status code that should be returned
-  - ``url``: the url that should be mapped
-  - ``contentType``: the content type of the response
-  - ``response``: the file that contains the response
-  - ``requestBody``: (for POST and PUT requests) the request body
-- for the ``url`` and the ``requestBody`` we use WireMock's ``urlMatching`` functionality. This means that we can use regular expressions to match the url and the request body:
+request1.response=helloWorld.json
 ```
+
+- **Request Configuration**:
+  - **Prefix**: Each configuration starts with `request` followed by a unique identifier.
+  - **Properties**:
+    - `requestType`: The HTTP method (GET, POST, PUT, DELETE).
+    - `statusCode`: The HTTP status code to return.
+    - `url`: The URL path to map.
+    - `contentType`: The response content type.
+    - `response`: The file containing the response body.
+    - `requestBody`: (For POST and PUT) The expected request body.
+
+### URL and Request Body Matching
+
+Utilize WireMock's `urlMatching` functionality for regex-based matching:
+
+```properties
 request1.requestType=GET
 request1.statusCode=200
 request1.url=/getEmployee\\?([a-z]*)=([0-9]*)
 request1.contentType=application/json
 request1.response=employee.json
+
 request2.requestType=POST
 request2.statusCode=200
 request2.requestBody=.*
@@ -39,64 +110,51 @@ request2.url=/addEmployee
 request2.contentType=application/json
 request2.response=addEmployee.json
 ```
-- in the example above, the first request can be matched to the url ``/getEmployee?id=1`` and int the second request the request body can be anything but empty.
-- the response files should be located in a folder called ``__files``. That folder needs to be in a directory that is defined in the configuration file. The default location is ``src/main/resources/``. The location can be changed in the configuration file (later more).
 
-#### Non Request Configuration Properties
-- the server can currently be configured with the following properties:
-  - ``port``: the port that the server should run on
-  - ``hostname``: the hostname that the server should run on
-  - ``fileLocation``: the location that is used for the response files for the requests and the configuration file.
-    - WireMock will look for the response files in a folder named ``__files``, which is per default located at ``src/test/resources/``
-    - WireMock allows us to change the location of the ``__files`` folder
-    - when we run the server from the IDE, we change the default location to ``src/main/resources/`` so that the response files are in the resources folder of the project, and we do not use this property.
-    - when we use the docker compose configuration, we use this property to change the location of the ``__files`` folder to ``/data`` and copy the contents of the resources folder to the ``/data`` folder in the docker container.
+- **Examples**:
+  - The first request matches the URL `/getEmployee?id=1`.
+  - The second request matches any non-empty POST body.
 
-### What should be defined
+### Response Files
 
-- the configuration file should be defined in the resources folder of the project and should be named ``config.properties``
-- the response files should be defined in the resources folder of the project and should be named as defined in the configuration file
-- the volume mount in the docker compose file should be defined. We mount a local directory to the ``/data`` directory in the docker container. The local directory should contain the response files and the configuration file.
+- Response files should be placed in a `__files` directory.
+- By default, this directory is located at `src/main/resources/`.
+- The location can be customized in the configuration file.
 
-### Running the Server
+### Non-Request Configuration Properties
 
-- the server can be run from the IDE or from docker compose
-- when we run the ``main`` function it expects at least one Parameter in the args Array. That parameter is the ``mode`` the mode that should be used for the configuration:
-  - ``local``: the server is run from the IDE
-    -  when we run the server from the IDE, we use the default configuration (``config.properties``), which is located in the resources folder of the project
-  - ``docker``: the server is run from docker compose
-    - when we run the server from docker compose, we use the configuration file that is located in the ``/data`` folder in the docker container
-    - also, we need to give a second parameter in the args array. This parameter is the name of the configuration file that we want to use. The configuration file should be located in the ``/data`` folder in the docker container.
-- run command for the command line for local configuration: ``java -jar application.jar local``
-- run command used in the dockerfile: ``java -jar application.jar docker config.properties``
+The server's behavior can be configured via `config.properties` with the following properties:
 
-### Docker Compose Example
+- **port**: The port on which the server runs.
+- **hostname**: The hostname for the server.
+- **fileLocation**: The location of the response files and configuration file.
+  - The `__files` directory is located at `src/test/resources/` by default.
+  - When running the server from an IDE, the default location is `src/main/resources/`.
+  - When using Docker Compose, set this to `/data` inside the container.
 
-In this section we will show an example of how to use Echoserve with docker compose.
+## Running the Server
 
-#### Example Docker Compose File
+- **Local**: Run the server with the command:
 
-```
-services:
-  customwiremocktest:
-    image:   jaracogmbh/echoserve:1.0.0
-    volumes:
-      - /path/to/your/mappings:/data:ro
-    ports:
-      - "8089:8089"
-```
-- It is required to use a volume mount to mount the mappings to the ``/data`` directory in the docker container. The mappings should contain the response files and the configuration file. 
-- The response files should be in a folder named ``__files`` in the mappings directory. This is required by WireMock.
-- The configuration file should be named ``config.properties``.
+  ```bash
+  java -jar application.jar local
+  ```
 
+- **Docker**: Run the server using Docker Compose:
 
-### Example
+  ```bash
+  docker-compose up
+  ```
 
-A simple example of a configuration file and a response file is shown below. A more complex example can be found in the resources folder of the project. We will use the Docker Compose example to show how to use the configuration file and the response file.
+## Example Configuration and Response Files
 
-#### Configuration File
+This example demonstrates how to set up your configuration file and response file for the Custom WireMock Project.
 
-```
+#### `config.properties`
+
+Place this file in the `/resources` directory. It defines the configuration for a GET request to the `/helloWorld` endpoint, returning a JSON response.
+
+```properties
 fileLocation=/data
 hostname=localhost
 port=8089
@@ -107,18 +165,43 @@ request1.contentType=application/json
 request1.response=helloWorld.json
 ```
 
-This file will be located in the ``/path/to/your/mappings`` directory under the name given in the configuration file.
+#### `helloWorld.json`
 
-#### Response File
+This file contains the JSON response for the configured endpoint. It should be placed in the `/resources/__files` directory.
 
-```
+```json
 {
   "message": "Hello World"
 }
 ```
-This file will be located in the ``/path/to/your/mappings/__files`` directory.
 
-#### Running the Server
-When the server is run from docker compose, the server will use the configuration file and the response file that are located in the ``/data`` directory in the docker container. The server will run on port 8089. Our volume mount will map the ``/path/to/your/mappings`` directory to the ``/data`` directory in the docker container. The server will be accessible at ``http://localhost:8089/helloWorld``.
+### File Locations
 
-<div><img src="/images/jaraco_logo_software_engineer.png" width="200px" align="right"></div>
+Ensure the following file structure is in place:
+
+```
+.
+└── resources
+    ├── config.properties
+    └── __files
+        └── helloWorld.json
+```
+
+- `config.properties` should be located in the `/resources` directory.
+- `helloWorld.json` should be located in the `/resources/__files` directory.
+
+### Response 
+
+```json
+{
+  "message": "Hello World"
+}
+```
+## Troubleshooting
+
+### Common Issues
+
+- **No Config Directory Given**: Ensure the `config.properties` file is correctly placed and accessible.
+- **File Permissions**: Verify that the files have the correct permissions for the Docker container.
+
+<div><img src="images/jaraco_logo_software_engineer.png" width="200px" align="right"></div>
