@@ -3,6 +3,7 @@ plugins {
     java
     application
     id("com.avast.gradle.docker-compose") version "0.17.8"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.0"
     kotlin("jvm") version "2.0.0"
 }
 
@@ -21,6 +22,13 @@ repositories {
 
 dependencies {
     implementation("org.wiremock:wiremock-standalone:3.9.1")
+    implementation("io.ktor:ktor-server-core-jvm:2.3.4")
+    //todo?: cve-2024-29025
+    implementation("io.ktor:ktor-server-netty-jvm:2.3.4")
+    implementation("io.ktor:ktor-server-content-negotiation-jvm:2.3.4")
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:2.3.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
     testImplementation(kotlin("test"))
 }
 
@@ -31,7 +39,7 @@ kotlin {
     jvmToolchain(21)
 }
 
-tasks.withType<Jar>() {
+tasks.withType<Jar> {
   manifest {
     attributes["Main-Class"] = "de.jaraco.MainKt"
   }
