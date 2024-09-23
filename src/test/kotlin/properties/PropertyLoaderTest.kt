@@ -1,7 +1,7 @@
 package properties
 
 import de.jaraco.exception.NoPropertiesInPropertyFileException
-import de.jaraco.exception.UnknownModusException
+import de.jaraco.exception.UnknownModeException
 import de.jaraco.properties.PropertyLoader
 import org.junit.jupiter.api.assertThrows
 import java.util.*
@@ -86,7 +86,7 @@ class PropertyLoaderTest {
 
   @Test
   fun testNoCorrectModus(){
-    assertThrows<UnknownModusException> {
+    assertThrows<UnknownModeException> {
       val properties = underTest.loadPropertyFile("config.properties", "wrong")
     }
   }
