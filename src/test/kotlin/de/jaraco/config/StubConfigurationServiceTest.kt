@@ -40,9 +40,7 @@ class StubConfigurationServiceTest {
         val contentType = "application/json"
         val status = 200
 
-
         writeResponseFile(responseFileName, responseContent)
-
 
         underTest.configureGetStub(
             url = url,

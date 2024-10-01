@@ -83,14 +83,14 @@ request1.response=helloWorld.json
 ```
 
 - **Request Configuration**:
-  - **Prefix**: Each configuration starts with `request` followed by a unique identifier.
-  - **Properties**:
-    - `requestType`: The HTTP method (GET, POST, PUT, DELETE).
-    - `statusCode`: The HTTP status code to return.
-    - `url`: The URL path to map.
-    - `contentType`: The response content type.
-    - `response`: The file containing the response body.
-    - `requestBody`: (For POST and PUT) The expected request body.
+    - **Prefix**: Each configuration starts with `request` followed by a unique identifier.
+    - **Properties**:
+        - `requestType`: The HTTP method (GET, POST, PUT, DELETE).
+        - `statusCode`: The HTTP status code to return.
+        - `url`: The URL path to map.
+        - `contentType`: The response content type.
+        - `response`: The file containing the response body.
+        - `requestBody`: (For POST and PUT) The expected request body.
 
 ### URL and Request Body Matching
 
@@ -112,8 +112,8 @@ request2.response=addEmployee.json
 ```
 
 - **Examples**:
-  - The first request matches the URL `/getEmployee?id=1`.
-  - The second request matches any non-empty POST body.
+    - The first request matches the URL `/getEmployee?id=1`.
+    - The second request matches any non-empty POST body.
 
 ### Response Files
 
@@ -128,9 +128,134 @@ The server's behavior can be configured via `config.properties` with the followi
 - **port**: The port on which the server runs.
 - **hostname**: The hostname for the server.
 - **fileLocation**: The location of the response files and configuration file.
-  - The `__files` directory is located at `src/test/resources/` by default.
-  - When running the server from an IDE, the default location is `src/main/resources/`.
-  - When using Docker Compose, set this to `/data` inside the container.
+    - The `__files` directory is located at `src/test/resources/` by default.
+    - When running the server from an IDE, the default location is `src/main/resources/`.
+    - When using Docker Compose, set this to `/data` inside the container.
+
+
+## Dynamic Configuration via API
+
+This feature lets you dynamically configure mock endpoints without restarting the server or changing any config files.
+You can now add or update mock endpoints by sending a POST request to `<host>:19991/configure`.
+
+### Basic information
+1. Once a request is sent to `/configure`, the **mock is available immediately** without needing to restart the server.
+2. The `/configure` endpoint listens on port `19991` by default.
+3. You can use regex for both `url` and `requestBody` fields. Set `isRequestBodyRegex` to `"true"` if you’re using regex in the body.
+4. When sending JSON in `responseBody`, remember to escape double quotes (`\"`).
+
+### How to add or update endpoint
+
+To configure a mock endpoint, send a `POST` request to the `<host>:19991/configure` endpoint with a JSON payload that defines the behavior.
+
+#### Example Request
+
+```bash
+curl -X POST "http://localhost:19991/configure" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "requestType": "POST",
+           "url": "/get-endpoint4",
+           "hostname": "localhost",
+           "responseBody": "{\"message\": \"POST request successful\"}",
+           "contentType": "application/json",
+           "statusCode": 200,
+           "requestBody": ".*",
+           "isRequestBodyRegex": "true"
+         }'
+```
+
+#### JSON Payload Breakdown
+
+| Field                | Type    | Required | Description                                                            |
+|----------------------|---------|----------|------------------------------------------------------------------------|
+| `requestType`        | String  | Yes      | The HTTP method for the mock (`GET`, `POST`, `PUT`, `DELETE`).         |
+| `url`                | String  | Yes      | The endpoint path to mock (regex patterns are supported).              |
+| `hostname`           | String  | Yes      | The hostname where the mock server is running.                         |
+| `responseBody`       | String  | Yes      | The response body to return (escape double quotes for JSON).           |
+| `contentType`        | String  | Yes      | The `Content-Type` header for the response (e.g., `application/json`). |
+| `statusCode`         | Integer | Yes      | The HTTP status code to return (e.g., `200` for OK).                   |
+| `requestBody`        | String  | No       | The expected request body (use regex patterns if needed).              |
+| `isRequestBodyRegex` | Boolean | No       | Set to `"true"` if `requestBody` is a regex; otherwise, `"false"`.     |
+
+### HTTP Method-Specific Configurations
+
+Depending on the `requestType`, certain fields are required or optional. Here’s a quick guide:
+
+| HTTP Method | Required Fields                                                                                     |
+|-------------|-----------------------------------------------------------------------------------------------------|
+| GET         | `url`, `hostname`, `responseBody`, `contentType`, `statusCode`                                      |
+| POST        | `url`, `hostname`, `responseBody`, `contentType`, `statusCode`, `requestBody`, `isRequestBodyRegex` |
+| PUT         | `url`, `hostname`, `responseBody`, `contentType`, `statusCode`, `requestBody`, `isRequestBodyRegex` |
+| DELETE      | `url`, `hostname`, `responseBody`, `contentType`, `statusCode`                                      |
+
+### Example Requests
+
+#### Configuring a GET Endpoint
+
+```bash
+curl -X POST "http://localhost:19991/configure" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "requestType": "GET",
+           "url": "/helloWorld",
+           "hostname": "localhost",
+           "responseBody": "{\"message\": \"Hello World\"}",
+           "contentType": "application/json",
+           "statusCode": 200
+         }'
+```
+
+#### Configuring a POST Endpoint with Any Body
+
+```bash
+curl -X POST "http://localhost:19991/configure" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "requestType": "POST",
+           "url": "/addEmployee",
+           "hostname": "localhost",
+           "responseBody": "{\"message\": \"Employee added successfully\"}",
+           "contentType": "application/json",
+           "statusCode": 201,
+           "requestBody": ".*",
+           "isRequestBodyRegex": "true"
+         }'
+```
+
+#### Configuring a PUT Endpoint with Specific Body
+
+```bash
+curl -X POST "http://localhost:19991/configure" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "requestType": "PUT",
+           "url": "/updateEmployee",
+           "hostname": "localhost",
+           "responseBody": "{\"message\": \"Employee updated successfully\"}",
+           "contentType": "application/json",
+           "statusCode": 200,
+           "requestBody": "{\"id\": \"123\", \"name\": \"John Doe\"}",
+           "isRequestBodyRegex": "false"
+         }'
+```
+
+#### Configuring a DELETE Endpoint
+
+```bash
+curl -X POST "http://localhost:19991/configure" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "requestType": "DELETE",
+           "url": "/deleteEmployee",
+           "hostname": "localhost",
+           "responseBody": "{\"message\": \"Employee deleted successfully\"}",
+           "contentType": "application/json",
+           "statusCode": 200
+         }'
+```
+
+> **Note**: Because the `/configure` endpoint can alter server behavior, make sure it's secured in production. You might want to restrict access to this endpoint using firewall rules or authentication methods.
 
 ## Running the Server
 
@@ -190,7 +315,7 @@ Ensure the following file structure is in place:
 - `config.properties` should be located in the `/resources` directory.
 - `helloWorld.json` should be located in the `/resources/__files` directory.
 
-### Response 
+### Response
 
 ```json
 {
