@@ -17,41 +17,47 @@ import io.ktor.server.routing.*
 import java.util.logging.Logger
 
 fun main(args: Array<String>) {
-  val logger: Logger = Logger.getLogger("main")
-  logger.info("Test Parameters: ${args.contentToString()}")
+    val logger: Logger = Logger.getLogger("main")
+    logger.info("Test Parameters: ${args.contentToString()}")
 
-  if (args.isEmpty()) {
-    throw IllegalArgumentException("No mode given")
-  } else {
-    val mode = args[0]
-    val configurationService = ConfigurationService.getInstance()
-
-    if (mode == "docker") {
-      if (args.size == 2) {
-        val configFilename = args[1]
-        configurationService.configureCustomWireMock(mode = mode, filename = configFilename)
-      } else {
-        throw NoConfigDirectoryGivenException("No config directory given!")
-      }
-    } else if (mode == "local") {
-      configurationService.configureCustomWireMock(mode = mode, filename = null)
+    if (args.isEmpty()) {
+        throw IllegalArgumentException("No mode given")
     } else {
-      throw IllegalArgumentException("Mode $mode not supported")
-    }
+        val mode = args[0]
+        val configurationService = ConfigurationService.getInstance()
 
-    // handling /configure endpoint
-    embeddedServer(Netty, port = 19991) { //todo? ser the port in some config?
-      install(ContentNegotiation) {
-        json()
-      }
-      routing {
-        post("/configure") {
-          val stubConfig = call.receive<StubConfiguration>()
-          logger.info("Received configuration: $stubConfig")
-          configurationService.configureStubFromPayload(stubConfig)
-          call.respond(HttpStatusCode.OK, "Stub configured successfully.")
+        if (mode == "docker") {
+            if (args.size == 2) {
+                val configFilename = args[1]
+                configurationService.configureCustomWireMock(mode = mode, filename = configFilename)
+            } else {
+                throw NoConfigDirectoryGivenException("No config directory given!")
+            }
+        } else if (mode == "local") {
+            configurationService.configureCustomWireMock(mode = mode, filename = null)
+        } else {
+            throw IllegalArgumentException("Mode $mode not supported")
         }
-      }
-    }.start(wait = true)
-  }
+
+        // handling /configure endpoint
+        embeddedServer(Netty, port = 19991) { //todo? set the port in some config?
+            install(ContentNegotiation) {
+                json()
+            }
+            routing {
+                post("/configure") {
+                    val stubConfig = call.receive<StubConfiguration>()
+                    logger.info("Received configuration: $stubConfig")
+                    configurationService.configureStubFromPayload(stubConfig)
+                    call.respond(HttpStatusCode.OK, "Stub configured successfully.")
+                }
+
+                post("/reset") {
+                    logger.info("Resetting WireMock server")
+                    configurationService.resetCustomWireMock()
+                    call.respond(HttpStatusCode.OK, "WireMock server reset successfully.")
+                }
+            }
+        }.start(wait = true)
+    }
 }

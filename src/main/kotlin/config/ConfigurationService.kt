@@ -32,6 +32,15 @@ class ConfigurationService private constructor(
         return customWireMock
     }
 
+    fun resetCustomWireMock() {
+        if (::customWireMock.isInitialized) {
+            customWireMock.resetWireMockServer()
+            logger.info("WireMock server reset")
+        } else {
+            logger.warning("Cannot reset WireMock server, it is not initialized")
+        }
+    }
+
     private fun configureStubs(properties: Properties) {
         logger.info("Configuring stubs")
         val hostname = propertyLoader.extractHostname(properties)
