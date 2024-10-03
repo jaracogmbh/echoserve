@@ -1,0 +1,48 @@
+services:
+  echoserve:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081" #wiremock service – mocked services runs there
+      - "19991:19991" #wiremock config - you can config 8089 services via this endpoint
+    volumes:
+      - ./example/config:/data:ro
+    networks:
+      - app-network
+
+  sut: # service under test
+    build:
+      context: ./example/sut
+      dockerfile: Dockerfile
+
+    ports:
+      - "3000:3000"
+    environment:
+      - AUTH_SERVER_URL=http://echoserve:8081/authenticate
+      - PORT=3000
+    depends_on:
+      - echoserve
+    networks:
+      - app-network
+
+  playwright:
+    image: mcr.microsoft.com/playwright:focal
+    container_name: playwright
+    volumes:
+      - ./example/tests/playwright/:/tests
+    working_dir: /tests
+    depends_on:
+      - sut
+      - echoserve
+    environment:
+      - SUT_URL=http://sut:3000
+      - ECHOSERVE_URL=http://echoserve:19991
+    networks:
+      - app-network
+    entrypoint: [ "bash", "-c", "sleep 10s; npm install && npx playwright test" ]
+
+networks:
+  app-network:
+    driver: bridge
