@@ -1,95 +1,160 @@
-## Example Usage
+# Example usage of echoserve with SUT and Playwright Tests
 
-This project includes an **example setup** that demonstrates how to run some **Service Under Test (SUT)** alongside **WireMock (echoserve)** and execute **Playwright** tests to verify the SUT's behavior under different configurations.
+This example demonstrates how to use `echoserve`, a customizable mock service based on WireMock, to simulate authentication scenarios for a Service Under Test (SUT). 
+We will run the SUT alongside echoserve and use Playwright tests to verify the SUT’s behavior under different authentication configurations.
+
+## Overview
+
+This example showcases how echoserve can mock external services—in this case, an authentication service—and dynamically change its behavior at runtime. The SUT interacts with echoserve for authentication, and Playwright tests validate the SUT’s responses under different authentication scenarios.
 
 ### Directory Structure
-
 ```
 /example
-├── config                      <-- this is config for the echoserve
+├── config                      <-- Configuration for echoserve
 │   ├── __files
-│   │   └── authenticate.json   <-- response body file
-│   └── config.properties       <-- echoserve configuration 
-├── sut                         <-- some Service Under Test which uses echoserve to echoserve as authorization service  
+│   │   └── authenticate.json   <-- Initial authentication response body
+│   └── config.properties       <-- Initial echoserve configuration
+├── sut                         <-- Service Under Test using echoserve for authentication
 │   ├── Dockerfile
-│   ├── package-lock.json
 │   ├── package.json
-│   └── server.js
+│   └── server.js               <-- Main application logic
 └── tests
-    └── playwright
-        ├── package.json
-        ├── playwright.config.ts
-        ├── tests
-        │   └── login.test.ts    <-- Playwright test, which check SUT behavior when Echoserve "auth the user" and "user not authorized"
-        └── test-results
+└── playwright
+├── package.json
+├── playwright.config.ts
+└── tests
+└── auth.test.ts    <-- Playwright tests verifying SUT behavior with echoserve
 ```
 
 ### Prerequisites
+ - Docker and Docker Compose installed on your machine.
 
-- **Docker** and **Docker Compose** installed on your machine.
+## Setup and Execution
+1. Clone the Repository
+```bash
+git clone https://github.com/jaracogmbh/echoserve.git
+cd echoserve/example
+```
 
-### Steps to Run the Example
+2. Start the Services
+```bash
+docker-compose -f docker-compose-example.yml up --build
+```
 
-1. **Navigate to the Example Directory**
+## What Happens:
+1. `echoserve`:
+    - Starts on ports `8081` (mock service) and `19991` (configuration API).
+    - Initially configured to return successful authentication responses.
 
-   Open your terminal, clone repo and navigate to the `example` directory of the project:
+2. `SUT`:
+    - Starts on port `3000`.
+    - Contains endpoints that require authentication, which it verifies by calling echoserve.
 
-   ```bash
-   git clone https://github.com/jaracogmbh/echoserve.git #or gh repo clone jaracogmbh/echoserve
-   cd echoserve
-   ```
+3. `Playwright`:
+    - Begin execution after echoserve and SUT are up.
+    - Perform tests under different authentication scenarios.
 
-2. **Start the Services with Docker Compose**
+3. Monitor the Execution:
+   As the services start, you can observe the logs in your terminal. The Playwright tests will execute automatically and display their progress.
 
-   Build and start all the services (`echoserve`, `sut`, and `playwright`) using Docker Compose:
+### Sample Output:
 
-   ```bash
-   docker-compose -f docker-compose-example.yml up --build
-   ```
+```
+sut-1        | Service Under Test running on port 3000
+playwright   | Running 4 tests using 1 worker
+playwright   |
+playwright   |   ✓ Add Employee - Expect Success (200)
+playwright   |   ✓ Edit Employee - Expect Success (200)
+playwright   |   ✓ Delete Something - Expect Success (200)
+playwright   | === Resetting echoserve ===
+echoserve-1  | INFO: Resetting WireMock server
+playwright   | === Configuring echoserve to return 401 Unauthorized ===
+echoserve-1  | INFO: Configuring POST stub for /authenticate to return 401
+playwright   |   ✓ Add Employee - Expect Unauthorized (401)
+playwright   |
+playwright   |   4 passed (1.1s)
+```
 
-    **What Happens:**
-   - **echoserve**: Runs WireMock on ports `8081` (for mocking services) and `19991` (for configuration).
-   - **sut**: Launches the Service Under Test on port `3000`, which uses WireMock for handling authentication.
-   - **playwright**: Executes a series of Playwright tests:
-       1. Tests `SUT`'s behavior of an authorized user (expecting successful login).
-       2. Calls `echoserve` to "deauthorize" the user by resetting the authorization state.
-       3. Tests the behavior of an unauthorized user (expecting failed login).
+### Analyze the Results:
+   
+The tests perform the following actions:
 
+- Initial Authentication and operations:
+    - The SUT logs in using `/login`, receiving a successful authentication token from echoserve.
+    - Performs operations (`/addEmployee`, `/editEmployee`, `/deleteSomething`) which require authentication.
+    - All operations succeed because echoserve returns a `200 OK` response for authentication checks.
 
-3. **Monitor the Test Execution**
+- Reconfiguring echoserve:
+    - Playwright resets echoserve using its `/reset` endpoint on port 19991.
+    - Reconfigures echoserve to return a `401 Unauthorized` response for authentication requests.
 
-   As the services start, you can observe the logs in your terminal. Look for Playwright's test execution logs to verify that the tests are running as expected.
+- Testing Unauthorized Access:
+    - The SUT attempts to perform the `/addEmployee` operation again.
+    - The operation fails with a `401 Unauthorized` error because echoserve now denies authentication.
 
-   **Sample Output:**
+## Under the Hood
 
-   ```
-   sut-1        | Service Under Test running on port 3000
-   playwright  | Running 2 tests using 1 worker
-   playwright  |
-   playwright  |   ✓ SUT Login Tests with WireMock Reset and Reconfiguration › Initial Login Test - Expect Success (200) (16ms)
-   playwright  |   ✓ SUT Login Tests with WireMock Reset and Reconfiguration › Secondary Login Test - Expect Unauthorized (401) (16ms)
-   playwright  |
-   playwright  |   2 passed (32ms)
-   playwright  | === All Tests Completed ===
-   ```
+### `echoserve` configuration
 
-5. **Clean Up**
+#### Initial Configuration:
 
-   Once you're done with the tests, you can stop and remove the containers by pressing `Ctrl + C` in the terminal where Docker Compose is running or by executing:
+`echoserve` is set up to respond with a `200 OK` for `POST` requests to `/authenticate`, returning a success message and token. This simulates a successful authentication service.
 
-   ```bash
-   docker-compose down
-   ```
+#### Dynamic Reconfiguration:
+During the tests, echoserve is reconfigured via its configuration API (on port `19991`) to simulate different authentication responses without restarting the service. This demonstrates how echoserve can dynamically change its behavior at runtime.
 
-- **Connection Refused Errors:**
+### Service Under Test (SUT)
 
-    - Verify that the health checks are correctly set up and that both `echoserve` and `sut` are marked as healthy before Playwright starts testing.
-    - Ensure that the environment variables `SUT_URL` and `ECHOSERVE_URL` are correctly pointing to the respective services within the Docker network.
+#### Functionality:
+The SUT is a simple Node.js application with endpoints that require authentication. It uses an authentication middleware that verifies tokens by calling echoserve’s /authenticate endpoint.
 
-### Conclusion
+#### Protected Endpoints:
+ - `/addEmployee`
+ - `/editEmployee`
+ - `/deleteSomething`
 
-This example demonstrates the versatility of **echoserve** as a configurable mock service. It can be incredibly useful in a variety of testing scenarios, especially when you need a mock service that can be configured dynamically via API and files. Here are some potential use cases:
+These endpoints simulate operations that should only be accessible to authenticated users.
 
-- Simulate different responses from external services without relying on live endpoints, ensuring consistent testing.
-- Dynamically change responses (e.g., switch between 200 and 500 error codes) to test how your service handles unexpected conditions.
-- Easily configure different behaviors for external services during development phases, allowing teams to focus on specific test cases.
+### Playwright Tests
+
+#### Purpose:
+The tests simulate user interactions with the SUT and validate its behavior under different authentication scenarios by controlling echoserve’s responses.
+
+#### Flow:
+1. **Successful Authentication:**
+    - Log in to obtain an authentication token from echoserve.
+    - Access protected endpoints successfully, verifying that the SUT allows operations when authentication is successful.
+
+2. **Reset and Reconfigure echoserve:**
+    - Reset echoserve to clear previous configurations.
+    - Reconfigure it to return a 401 Unauthorized response for authentication requests, simulating an authentication failure.
+
+3. **Failed Authentication:**
+    - Attempt to access protected endpoints with the same token.
+    - Expect operations to fail with a 401 Unauthorized error, verifying that the SUT correctly handles authentication failures.
+
+## Purpose and Opportunities
+
+This example illustrates how **echoserve** can:
+
+- **Simulate external services:**  
+  Allow developers to mock external APIs and services, enabling consistent and controlled testing environments without relying on live services.
+
+- **Dynamically change behavior:**  
+  echoserve can be reconfigured on-the-fly to return different responses, which is valuable for testing various scenarios without redeploying or restarting services.
+
+- **Facilitate robust testing:**  
+  By controlling external dependencies, developers can focus on testing the application’s logic and error handling more effectively, including edge cases and failure modes.
+
+### Potential Use Cases:
+
+- **API development:**  
+  Mock backend services during frontend development to enable independent development and testing.
+
+- **Microservices testing:**  
+  Test interactions between services without deploying all dependencies, allowing for isolated and controlled testing environments.
+
+- **Error handling verification:**  
+  Ensure the application behaves correctly under failure conditions of external services, improving the resilience and reliability of the application.
+
+Feel free to explore the repository for the full code examples and further details. 

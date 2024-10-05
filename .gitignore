@@ -41,3 +41,8 @@ bin/
 ### Mac OS ###
 .DS_Store
 /src/test/resources/__files
+
+
+### Node ###
+node_modules
+.idea
