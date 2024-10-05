@@ -33,7 +33,7 @@ This example showcases how echoserve can mock external services—in this case, 
 1. Clone the Repository
 ```bash
 git clone https://github.com/jaracogmbh/echoserve.git
-cd echoserve/example
+cd echoserve
 ```
 
 2. Start the Services
