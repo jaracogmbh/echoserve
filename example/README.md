@@ -157,4 +157,24 @@ This example illustrates how **echoserve** can:
 - **Error handling verification:**  
   Ensure the application behaves correctly under failure conditions of external services, improving the resilience and reliability of the application.
 
+
+### Additional presets
+
+Preset configurations to mock common REST APIs using WireMock are available under `presets` directory. 
+
+Each preset is organized by service, containing:
+ - `config.properties` which defines requests (type, URL, status, etc.).
+ - `__files/` dir with JSON response files for endpoints.
+
+#### Included examples
+ 1. GitHub – Get repo details, create issues, list/close issues.
+ 2. Stripe – Payment intent creation and response handling.
+ 3. Twilio – SMS sending, success/failure scenarios.
+ 4. Keycloak – Token validation, user info retrieval.
+ 5. AWS S3 – File upload success/failure.
+
+#### Usage
+ 1. Set up the mock service and place the preset files in `/data` (eg. copying via docker-compose).
+ 2. Start the mock server and it will handle requests as defined in the configs.
+
 Feel free to explore the repository for the full code examples and further details. 

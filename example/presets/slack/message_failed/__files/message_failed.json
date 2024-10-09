@@ -1,0 +1,10 @@
+{
+  "ok": false,
+  "error": "invalid_auth",
+  "warning": "Missing or invalid authentication token.",
+  "response_metadata": {
+    "warnings": [
+      "Missing or invalid authentication token."
+    ]
+  }
+}
