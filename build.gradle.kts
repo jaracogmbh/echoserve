@@ -10,7 +10,6 @@ plugins {
 group = "de.jaraco"
 version = ""
 
-
 java {
   toolchain {
     languageVersion.set(JavaLanguageVersion.of(21))
@@ -27,6 +26,7 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation-jvm:2.3.12")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:2.3.12")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("ch.qos.logback:logback-classic:1.5.9")
 
     testImplementation(kotlin("test"))
 }
@@ -54,3 +54,7 @@ tasks.withType<Jar> {
     archiveBaseName.set("application")
 }
 
+//dockerCompose{ // todo!: check compatibility to podman
+//    useComposeFiles.set(listOf("docker-compose-example.yml"))
+//}
+//
