@@ -1,6 +1,6 @@
 services:
   echoserve:
-    platform: linux/amd64
+    image: localhost/echoserve_echoserve
     build:
       context: .
       dockerfile: Dockerfile
@@ -12,11 +12,11 @@ services:
     networks:
       - app-network
 
-  sut: # service under test
+  sut:
+    image: localhost/echoserve_sut
     build:
       context: ./example/sut
       dockerfile: Dockerfile
-
     ports:
       - "3000:3000"
     environment:

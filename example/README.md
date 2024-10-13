@@ -27,20 +27,22 @@ This example showcases how echoserve can mock external services—in this case, 
 ```
 
 ### Prerequisites
- - Docker and Docker Compose installed on your machine.
+ - `Docker` and `docker-compose` or `Podman` and `podman-compose` installed on your machine.
 
 ## Setup and Execution
 1. Clone the Repository
-```bash
-git clone https://github.com/jaracogmbh/echoserve.git
-cd echoserve
-```
+    ```bash
+    git clone https://github.com/jaracogmbh/echoserve.git
+    cd echoserve
+    ```
 
 2. Start the Services
-```bash
-docker-compose -f docker-compose-example.yml up --build
-```
-
+    ```bash
+   # decide which tool for managing containers you want to use - docker or podman 
+    docker-compose -f docker-compose-example.yml up --build
+    # podman-compose -f docker-compose-example.yml up --build
+    ```
+   
 ## What Happens:
 1. `echoserve`:
     - Starts on ports `8081` (mock service) and `19991` (configuration API).
@@ -174,7 +176,7 @@ Each preset is organized by service, containing:
  5. AWS S3 – File upload success/failure.
 
 #### Usage
- 1. Set up the mock service and place the preset files in `/data` (eg. copying via docker-compose).
+ 1. Set up the mock service and place the preset files in `/data` (eg. copying via docker-compose file).
  2. Start the mock server and it will handle requests as defined in the configs.
 
 Feel free to explore the repository for the full code examples and further details. 
