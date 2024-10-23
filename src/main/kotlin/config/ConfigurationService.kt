@@ -8,6 +8,12 @@ import java.util.logging.Logger
 
 import java.util.*
 
+/**
+ * I think here you had the same problem with double code as you did in the ConfigurationService. Here the same
+ * argument applys. Jan and I think that you can keep it as it is since the stubs can be configured to many specific
+ * use cases. If you think there is a way to reduce some of the double code you can try. But for now, we think it is fine.
+ */
+
 class ConfigurationService private constructor(
     private val propertyLoader: PropertyLoader = PropertyLoader.getInstance(),
     private val stubConfigurationService: StubConfigurationService = StubConfigurationService.getInstance()

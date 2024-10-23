@@ -1,3 +1,7 @@
+/**
+    for release you need to change the polish comments to english
+ */
+
 import { test, expect, request } from "@playwright/test";
 
 const SUT_URL = process.env.SUT_URL || "http://sut:3000";

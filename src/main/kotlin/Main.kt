@@ -39,6 +39,10 @@ fun main(args: Array<String>) {
             throw IllegalArgumentException("Mode $mode not supported")
         }
 
+        /**
+         * To make it easier to configure the port for the /configure endpoint, we could add a parameter to the
+         * configuration file. This way, we could make the port configurable and not hardcoded.
+         */
         // handling /configure endpoint
         embeddedServer(Netty, port = 19991) { //todo? set the port in some config?
             install(ContentNegotiation) {

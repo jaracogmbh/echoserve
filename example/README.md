@@ -35,6 +35,7 @@ This example showcases how echoserve can mock external services—in this case, 
     git clone https://github.com/jaracogmbh/echoserve.git
     cd echoserve
     ```
+[comment]: <> (For me the docker build command does not work anymore. It used to work before. I look online and found that this command works for me: docker compose -f docker-compose-example.yml up --build. I do not know why. I suggest you put a disclaimer in the README.md file that the command may not work for some users and they may need to use the command I provided.)
 
 2. Start the Services
     ```bash

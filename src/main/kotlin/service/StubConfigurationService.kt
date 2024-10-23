@@ -3,6 +3,13 @@ package de.jaraco.service
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import java.util.logging.Logger
 
+/**
+ * I think here you had the problem with double code because you had to define the same methods for both
+ * the classic WireMock and your Conficuration Service. Jan and I talk about it and we think that you could keep
+ * it as it is since the stubs can be configured to many specific use cases. If you think there is a way to reduce
+ * some of the double code you can try. But for now, we think it is fine.
+ */
+
 class StubConfigurationService private constructor() {
 
     private var logger: Logger = Logger.getLogger(this.javaClass.name)
