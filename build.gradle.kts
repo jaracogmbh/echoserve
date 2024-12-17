@@ -2,7 +2,7 @@
 plugins {
     java
     application
-    id("com.avast.gradle.docker-compose") version "0.17.11"
+    id("com.avast.gradle.docker-compose") version "0.17.12"
     kotlin("jvm") version "2.1.0"
 }
 
