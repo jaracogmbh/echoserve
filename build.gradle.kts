@@ -3,7 +3,7 @@ plugins {
     java
     application
     id("com.avast.gradle.docker-compose") version "0.17.12"
-    kotlin("jvm") version "2.1.10"
+    kotlin("jvm") version "2.1.20"
 }
 
 group = "de.jaraco"
