@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.wiremock:wiremock-standalone:3.12.0")
+    implementation("org.wiremock:wiremock-standalone:3.12.1")
     testImplementation(kotlin("test"))
 }
 
