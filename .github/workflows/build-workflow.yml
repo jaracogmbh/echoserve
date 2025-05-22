@@ -5,9 +5,9 @@ on:
     branches:
       - main
       - feature/*
-jobs:
+jobs: 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted-linux"]  # Use your self-hosted runner
     steps:
       - name: Checkout project sources
         uses: actions/checkout@v4
@@ -29,7 +29,7 @@ jobs:
           path: build/libs/application.jar
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted-linux"]  # Use your self-hosted runner
     needs: build
     steps:
         - name: Checkout project sources
