@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Get git tag
         run: |
@@ -29,7 +29,7 @@ jobs:
     needs: tag
     steps:
       - name: Checkout project sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
@@ -58,7 +58,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PWD }}
 
       - name: Checkout project sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

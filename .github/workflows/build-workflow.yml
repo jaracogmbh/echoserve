@@ -10,7 +10,7 @@ jobs:
     runs-on: ["self-hosted-linux"]  # Use your self-hosted runner
     steps:
       - name: Checkout project sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
@@ -33,7 +33,7 @@ jobs:
     needs: build
     steps:
         - name: Checkout project sources
-          uses: actions/checkout@v4
+          uses: actions/checkout@v5
 
         - name: Set up Gradle
           uses: gradle/actions/setup-gradle@v3
