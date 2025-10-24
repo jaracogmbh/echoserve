@@ -64,7 +64,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Download tag
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v6
         with:
           name: tag
           path: /tmp
@@ -77,7 +77,7 @@ jobs:
           echo "::set-output name=tag::$tag"
 
       - name: Download JAR artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v6
         with:
           name: application-jar
           path: build/libs
