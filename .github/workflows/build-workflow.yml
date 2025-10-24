@@ -23,7 +23,7 @@ jobs:
         run: ./gradlew build
 
       - name: Upload JAR file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: application-jar
           path: build/libs/application.jar
